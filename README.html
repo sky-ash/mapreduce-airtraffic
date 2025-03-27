@@ -28,7 +28,7 @@
 <p>Dieses Projekt analysiert Flugbewegungen von Verkehrsmaschinen europäischer Flughäfen für die Jahre 2019 und 2024.</p>
 <p>Ziel ist es, die Veränderung der Flugbewegungen von 2019 nach 2024 pro Flughafen und pro Land, in denen die Flughäfen liegen, zu berechnen und die Ergebnisse absteigend nach prozentualer Änderung zu sortieren.</p>
 <h2 id="datensatz">Datensatz </h2>
-<p>Grundlage ist die CSV-Datei <strong><a href="https://github.com/sky-ash/mapreduce-airtraffic/main/input/airport_traffic.csv">airport_traffic.csv</a></strong>, in der detaillierte Informationen über Flugbewegungen per Flughafen und Tag enthalten sind.</p>
+<p>Grundlage ist die CSV-Datei <strong><a href="https://github.com/sky-ash/mapreduce-airtraffic/blob/main/input/airport_traffic.csv">airport_traffic.csv</a></strong>, in der detaillierte Informationen über Flugbewegungen per Flughafen und Tag enthalten sind.</p>
 <details>
 	<summary>
 		<b>Die ersten 10 Zeilen der Datei</b>
@@ -343,13 +343,13 @@ EBBR    Belgium,2019,20000
 </ul>
 </li>
 <li>
-<p><strong>Ausgabe <a href="https://github.com/sky-ash/mapreduce-airtraffic/main/output/preprocessing/part-r-00000">part-r-00000</a></strong> :</p>
+<p><strong>Ausgabe <a href="https://github.com/sky-ash/mapreduce-airtraffic/blob/main/output/preprocessing/part-r-00000">part-r-00000</a></strong> :</p>
 <pre data-role="codeBlock" data-info="" class="language-text"><code>EBBR    Belgium,231172,196044
 EBCI    Belgium,54426,61559
 EDDB    Germany,89374,190120
 EDDC    Germany,19753,10089
 ...
-</code></pre><p>All diese Zeilen werden in <strong><a href="https://github.com/sky-ash/mapreduce-airtraffic/main/output/preprocessing/">/output/preprocessing/</a></strong> geschrieben und bilden die Grundlage für die Auswertungen in den nächsten Schritten.</p>
+</code></pre><p>All diese Zeilen werden in <strong><a href="https://github.com/sky-ash/mapreduce-airtraffic/tree/main/output/preprocessing/">/output/preprocessing/</a></strong> geschrieben und bilden die Grundlage für die Auswertungen in den nächsten Schritten.</p>
 <p><img src="public/output_preprocessing.png" alt="preprocessing_output"></p>
 </li>
 </ul>
@@ -397,13 +397,13 @@ Germany    19753,10089
 </ul>
 </li>
 <li>
-<p><strong>Ausgabe <a href="https://github.com/sky-ash/mapreduce-airtraffic/main/output/temp/part-r-00000">part-r-00000</a></strong>:</p>
+<p><strong>Ausgabe <a href="https://github.com/sky-ash/mapreduce-airtraffic/blob/main/output/temp/part-r-00000">part-r-00000</a></strong>:</p>
 <pre data-role="codeBlock" data-info="" class="language-text"><code>Austria     281488,246184
 Belgium     285598,257603
 Bulgaria    59491,58919
 Croatia     44331,49663
 ...
-</code></pre><p>Diese Zwischenergebnisse werden z. B. in <strong><a href="https://github.com/sky-ash/mapreduce-airtraffic/main/output/temp/">/output/temp/</a></strong> gespeichert und dienen als Input für den Sortierschritt.</p>
+</code></pre><p>Diese Zwischenergebnisse werden z. B. in <strong><a href="https://github.com/sky-ash/mapreduce-airtraffic/tree/main/output/temp/">/output/temp/</a></strong> gespeichert und dienen als Input für den Sortierschritt.</p>
 </li>
 </ul>
 <hr>
@@ -446,13 +446,13 @@ Croatia     44331,49663
 </ul>
 </li>
 <li>
-<p><strong>Ausgabe <a href="https://github.com/sky-ash/mapreduce-airtraffic/main/output/countries/part-r-00000">part-r-00000</a></strong>:</p>
+<p><strong>Ausgabe <a href="https://github.com/sky-ash/mapreduce-airtraffic/blob/main/output/countries/part-r-00000">part-r-00000</a></strong>:</p>
 <pre data-role="codeBlock" data-info="" class="language-text"><code>Cyprus	        -100,35544,0
 Lithuania	      -100,46565,0
 Latvia	        -36,86722,55476
 Slovenia	      -24,28331,21513
 ...
-</code></pre><p>Diese finale Liste der Länder, sortiert nach prozentualer Veränderung, wird in <strong><a href="https://github.com/sky-ash/mapreduce-airtraffic/main/output/countries/">/output/countries/</a></strong> hinterlegt.</p>
+</code></pre><p>Diese finale Liste der Länder, sortiert nach prozentualer Veränderung, wird in <strong><a href="https://github.com/sky-ash/mapreduce-airtraffic/tree/main/output/countries/">/output/countries/</a></strong> hinterlegt.</p>
 <p><img src="public/output_countries.png" alt="countries_output"></p>
 </li>
 </ul>
@@ -496,13 +496,13 @@ Slovenia	      -24,28331,21513
 </ul>
 </li>
 <li>
-<p><strong>Ausgabe <a href="https://github.com/sky-ash/mapreduce-airtraffic/main/output/airports/part-r-00000">part-r-00000</a></strong>:</p>
+<p><strong>Ausgabe <a href="https://github.com/sky-ash/mapreduce-airtraffic/blob/main/output/airports/part-r-00000">part-r-00000</a></strong>:</p>
 <pre data-role="codeBlock" data-info="" class="language-text"><code>ENSG    -100,2852,0,Norway
 EDDT    -100,191591,0,Germany
 EGCC    -100,202883,0,United Kingdom
 ENAL    -100,8128,0,Norway
 ...
-</code></pre><p>Damit entsteht in <strong><a href="https://github.com/sky-ash/mapreduce-airtraffic/main/output/airports/">/output/airports/</a></strong> eine Liste aller Flughäfen, sortiert nach prozentualer Veränderung.</p>
+</code></pre><p>Damit entsteht in <strong><a href="https://github.com/sky-ash/mapreduce-airtraffic/tree/main/output/airports/">/output/airports/</a></strong> eine Liste aller Flughäfen, sortiert nach prozentualer Veränderung.</p>
 <p><img src="public/output_airports.png" alt="airports_output"></p>
 </li>
 </ul>
