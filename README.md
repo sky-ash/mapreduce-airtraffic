@@ -6,7 +6,7 @@ Ziel ist es, die Veränderung der Flugbewegungen von 2019 nach 2024 pro Flughafe
 
 ## Datensatz
 
-Grundlage ist die CSV-Datei **[airport_traffic.csv](input/airport_traffic.csv)**, in der detaillierte Informationen über Flugbewegungen per Flughafen und Tag enthalten sind.
+Grundlage ist die CSV-Datei **[airport_traffic.csv](./input/airport_traffic.csv)**, in der detaillierte Informationen über Flugbewegungen per Flughafen und Tag enthalten sind.
 
 <details>
 	<summary>
@@ -34,7 +34,7 @@ YEAR,MONTH_NUM,MONTH_MON,FLT_DATE,APT_ICAO,APT_NAME,STATE_NAME,FLT_DEP_1,FLT_ARR
 
 <details>
 <summary>
-	<b>Übersicht über die Felder der CSV</b>
+	<b>Die in der CSV enthaltenen Werte</b>
 </summary>
 
 Die folgende Tabelle gibt eine Übersicht über alle Spalten der CSV und die Anzahl fehlender Einträge:
@@ -86,7 +86,7 @@ mapreduce-airtraffic/
 └── README.md                     
 ```
 
-### Enthaltene Packages
+### Packages des Maven Projekts
 
 <table>
 	<thead>
@@ -100,22 +100,22 @@ mapreduce-airtraffic/
 		<tr>
 			<td><code>preprocessing/</code></td>
 			<td>
-			Filtern der CSV & Aggregation der Flugbewegungen pro Flughafen (inkl. Land). Fasst die jeweiligen Werte von 2019 und 2024 in einer Zeile zusammen.</td>
+			Filtern der CSV. <br>Aggregation der Flugbewegungen pro Flughafen (inkl. Land). Fasst die jeweiligen Werte von 2019 und 2024 in einer Zeile zusammen.</td>
 			<!--<td><code>PrepMapper</code>, <code>PrepCombiner</code>, <code>PrepReducer</code></td>-->
 		</tr>
 		<tr>
 			<td><code>countries/</code></td>
-			<td>Aggregation der Flugbewegungen pro Land & Berechnung der prozentualen Veränderung. Sortierte Ausgabe der Länder.</td>
+			<td>Aggregation der Flugbewegungen pro Land. <br>Berechnung der prozentualen Veränderung & Mapping nach dieser. <br>Gibt alle Länder, sortiert nach Prozenten, aus.</td>
 			<!--<td><code>CountryMapper</code>, <code>CountryReducer</code>, <code>CPercentageMapper</code>, <code>CPercentageReducer</code></td>-->
 		</tr>
 		<tr>
 			<td><code>airports/</code></td>
-			<td>Mapping nach prozentualer Änderung. Sortierte Ausgabe mit Flughafen als Key.</td>
+			<td>Mapping nach (in Preprocessing berechneter) prozentualer Änderung. <br> Gibt alle Flughäfen (ICAO-Codes), sortiert nach Prozenten, aus.</td>
 			<!--<td><code>APercentageMapper</code>, <code>APercentageReducer</code></td>-->
 		</tr>
 		<tr>
 			<td><code>utils/</code></td>
-			<td><code>utils.MapReduceJob</code>: Definiert Mapper, Reducer und Combiner, Input- und Output-Pfade, Output-Key- und Value-Klassen. Objekte dieser Klasse können mit <code>.run()</code> ausgeführt werden.</td>
+			<td><code>utils.MapReduceJob</code>: <br>Definiert Mapper, Reducer und Combiner, Input- und Output-Pfade, Output-Key- und Value-Klassen.<br> Objekte dieser Klasse können mit <code>.run()</code> ausgeführt werden.</td>
 			<!--<td><code>MapReduceJob</code></td>-->
 		</tr>
 	</tbody>
@@ -132,78 +132,76 @@ mapreduce-airtraffic/
 └── airtraffic.jar
 ```
 
-- **`/output/`**: Verzeichnisse Analog zu denen im HDFS
-- ![output_dirs_screenshot](public/hdfs_output_directories.png)
+- **`/output/`**: Verzeichnisse Analog zu denen im HDFS, inklusive Ausgabedateien der MapReduce-Jobs
+  
+  ![output_dirs_screenshot](./public/hdfs_out put_directories.png)
+
 - **`airtraffic.jar`**: vorkompilierte JAR-Datei des Projekts
 
 
 ## Anleitung zur Verwendung des Sourcecodes
 
-1. repository clonen (oder ZIP herunterladen und entpacken) & in das Projektverzeichnis wechseln
+1. **Repository clonen** (oder ZIP herunterladen und entpacken) & in das Projektverzeichnis wechseln
 
-```bash
-git clone https://github.com/sky-ash/mapreduce-airtraffic.git
-cd mapreduce-airtraffic
-```
+    ```bash
+    git clone https://github.com/sky-ash/mapreduce-airtraffic.git
+    cd mapreduce-airtraffic
+    ```
 
-2. JAR-Datei kompilieren
-	- es steht bereits eine vorkompilierte .jar Datei im repository zur verfuegung, deshalb ist dieser schritt nicht zwingend notwendig.
-- **Prerequisites:** `maven` muss installiert sein
+2. **JAR-Datei kompilieren** (`maven` muss installiert sein)
 
-```
-mvn clean package
-```
+    ```
+    mvn clean package
+    mv target/airtraffic-3.7-final.jar airtraffic.jar
+    ```
+    > Alternativ kann auch die vorkompilierte [`airtraffic.jar`](./airtraffic.jar) verwendet werden.
 
-3. (bei Lokaler ausführung) Hadoop starten
-	- insofern Hadoop bereits korrekt aufgesetzt wurde:
 
-```bash
-start-dfs.sh
-start-yarn.sh
-```
+3. **Hadoop starten**
 
-4. CSV-Datei in HDFS laden:
-    - Da der Preprocessing-Job Standardmaessig nach der Datei im `/input/`-Directory auf HDFS schaut, sollte sie dort abgelegt werden. 
-	- davor muss dieses verzeichnis erstellt werden
+    ```bash
+    start-dfs.sh
+    start-yarn.sh
+    ```
+
+4. **CSV-Datei in HDFS laden**:
+
+    Der Preprocessing-Job erwartet die CSV im `/input/`-Directory des HDFS.
+    Wir erstellen das Verzeichnis und legen die Datei dort ab.
 
 ```bash
 hdfs dfs -mkdir /input
 hdfs dfs -put data/airport_traffic.csv /input
 ```
 
-5. `/output/`-Pfade entfernen
-	- Die vom Programm benoetigten Verzeichnisse muessen frei sein. Deshalb  löschen wir diese:
+5. **`/output/`-Pfade freilegen**:
+	
+    Um sicherzustellen, dass die Ausgabeverzeichnisse leer sind, können sie vor dem Start des Jobs gelöscht werden:
 
-```bash
-hdfs dfs -mkdir /output/preprocessing/
-hdfs dfs -mkdir /output/temp/
-hdfs dfs -mkdir /output/countries/
-hdfs dfs -mkdir /output/airports/
-```
+    ```bash
+    hdfs dfs -rm -r /output/preprocessing/
+    hdfs dfs -rm -r /output/temp/
+    hdfs dfs -rm -r /output/countries/
+    hdfs dfs -rm -r /output/airports/
+    ```
 
-- alternativ kann auch das `/output/`-Verzeichnis als ganzes gelöscht werden:
+    Alternativ kann auch das `/output/`-Verzeichnis als ganzes gelöscht werden:
 
-```bash
-hdfs dfs -rm -r /output/
-```
+    ```bash
+    hdfs dfs -rm -r /output/
+    ```
 
-6. Ausführung
-- Nun muss nurnoch die JAR-Datei ausgeführt werden. 
-- Da alle Input- und Output-Pfade der einzelnen MapReduce Jobs als Standardvariablen vom Code bestimmt werden muss nichts weiter spezifiziert werden. 
+6. **Ausführen des Programms**:
 
-```bash
-hadoop jar airtraffic.jar 
-```
+    Da die `MapReduceJob`-Klasse für jede Instanz automatisch die richtigen Input- und Output-Pfade setzt, kann die JAR-Datei ohne weitere Argumente ausgeführt werden:
 
-oder, falls in Schritt 2 selbst kompiliert wurde: 
+    ```bash
+    hadoop jar airtraffic.jar 
+    ```
 
-```bash
-hadoop jar target/airtraffic-3.7-final.jar 
-```
-
-- Die Klasse "Main" startet automatisch und fuehrt alle MapReduce Jobs in der richtigen Reihenfolge durch. Daraufhin befinden sich die finalen Analyse-Ergebnisse im HDFS unter:
-- `/output/countries/part-r-00000`
-- `/output/airports/part-r-00000`
+    Die `Main`-Klasse führt automatisch alle MapReduce Jobs in der richtigen Reihenfolge durch. Daraufhin befinden sich die finalen Analyse-Ergebnisse im HDFS unter:
+      - [`/output/countries/part-r-00000`](./output/countries/part-r-00000)
+      - [`/output/airports/part-r-00000`](./output/airports/part-r-00000)
 
 ## Funktionsweise des Codes
 
@@ -241,9 +239,7 @@ Ziel dieses ersten Jobs ist es, aus der großen CSV-Datei nur die relevanten und
 
 - **Ausgabe (Beispielwerte)** : 
     ```
-    EDDB    Germany,89374,190120
-    EDDC    Germany,19753,5000
-    EBBR    Belgium,2019,20000
+    EDDF    Germany,2019,27945
     ...
     ```
     (Gleiche Struktur wie im Mapper, aber mit bereits aufsummierten Teilergebnissen)
@@ -258,7 +254,7 @@ Ein **Combiner** ist sinnvoll, da Summation kommutativ + assoziativ ist und so d
     - Finalisiert die Teilsummen der Combiner, sodass je `(airportCode, year)` eine Zeile übrig bleibt
     - kombiniert diese zu Zeilen, die jeweils die Werte beider Jahre enthalten `(total2019, total2024)`, sodass eine Zeile pro Flughafen entsteht   
 
-- **Ausgabe [part-r-00000](output/preprocessing/part-r-00000)** :  
+- **Ausgabe [part-r-00000](./output/preprocessing/part-r-00000)** :  
     ```
     EBBR    Belgium,231172,196044
     EBCI    Belgium,54426,61559
@@ -267,9 +263,9 @@ Ein **Combiner** ist sinnvoll, da Summation kommutativ + assoziativ ist und so d
     ...
     ```
 
-    All diese Zeilen werden in **[/output/preprocessing/](output/preprocessing/)** geschrieben und bilden die Grundlage für die Auswertungen in den nächsten Schritten.
+    All diese Zeilen werden in **[/output/preprocessing/](./output/preprocessing/)** geschrieben und bilden die Grundlage für die Auswertungen in den nächsten Schritten.
 
-    ![preprocessing_output](public/output_preprocessing.png)
+    ![preprocessing_output](./public/output_preprocessing.png)
 
 ---
 
@@ -308,7 +304,7 @@ Ziel dieser Job-Kette ist es, **alle Flughäfen eines Landes zu aggregieren** un
   - Summiert in einer Schleife alle 2019-Werte und 2024-Werte.  
   - Schreibt anschließend das Land als **Key** und `<aggregated2019>,<aggregated2024>` als **Value**.
 
-- **Ausgabe [part-r-00000](output/temp/part-r-00000)**:
+- **Ausgabe [part-r-00000](./output/temp/part-r-00000)**:
     ```
     Austria     281488,246184
     Belgium     285598,257603
@@ -317,7 +313,7 @@ Ziel dieser Job-Kette ist es, **alle Flughäfen eines Landes zu aggregieren** un
     ...
     ```
 
-    Diese Zwischenergebnisse werden z. B. in **[/output/temp/](output/temp/)** gespeichert und dienen als Input für den Sortierschritt.
+    Diese Zwischenergebnisse werden z. B. in **[/output/temp/](./output/temp/)** gespeichert und dienen als Input für den Sortierschritt.
 
 ---
 
@@ -327,21 +323,24 @@ Ziel dieser Job-Kette ist es, **alle Flughäfen eines Landes zu aggregieren** un
 - **Funktionsweise**:
   - Parst die beiden Zahlen (2019 und 2024).  
   - Berechnet den prozentualen Unterschied:  
+
     $$
     \text{percentChange} = \frac{(2024 - 2019)}{2019} \times 100
     $$  
+
     *(Sonderfall: Wenn 2019=0, wird ein default-Wert (+100 %) gewählt werden.)*  
-  - Übergibt die Prozentzahl als **Key** (Integer), sodass Hadoop automatisch nach dieser Zahl sortiert, und übergibt `<stateName>,<aggregated2019>,<aggregated2024>` als **Value**.
+  - Übergibt die Prozentzahl als **Key** (IntWritable), sodass im folgenden Sort/Shuffle automatisch nach dieser Zahl sortiert wird, und übergibt `<stateName>,<aggregated2019>,<aggregated2024>` als **Value**.
 
 - **Ausgabe (Beispieldaten)**:
-  ```
-  -15  France,3523456,2981501
-  -12  Germany,473117,417943
-  +11  Albania,19999,22199
-  ...
-  ```
+    ```
+    -12   Austria,281488,246184
+    -9    Belgium,285598,257603
+    0     Bulgaria,59491,58919
+    12    Croatia,44331,49663
+    ...
+    ```
 
-*(Hier entspricht der Key dem ganzzahligen Prozentwert.)*
+    > *(Hier entspricht der Key dem ganzzahligen Prozentwert.)*
 
 ---
 
@@ -353,18 +352,18 @@ Ziel dieser Job-Kette ist es, **alle Flughäfen eines Landes zu aggregieren** un
   - Liest das Land und die beiden Jahreswerte aus dem Value.  
   - Gibt das Land als **Key** und `<percentChange>,<aggregated2019>,<aggregated2024>` als **Value** aus.
 
-- **Ausgabe [part-r-00000](output/countries/part-r-00000)**:
+- **Ausgabe [part-r-00000](./output/countries/part-r-00000)**:
     ```
-    Cyprus	        -100,35544,0
-    Lithuania	      -100,46565,0
-    Latvia	        -36,86722,55476
-    Slovenia	      -24,28331,21513
+    Cyprus	      -100,35544,0
+    Lithuania     -100,46565,0
+    Latvia	      -36,86722,55476
+    Slovenia      -24,28331,21513
     ...
     ```
 
-    Diese finale Liste der Länder, sortiert nach prozentualer Veränderung, wird in **[/output/countries/](output/countries/)** hinterlegt.
+    Diese finale Liste der Länder, sortiert nach prozentualer Veränderung, wird in **[/output/countries/](./output/countries/)** hinterlegt.
 
-    ![countries_output](public/output_countries.png)
+    ![countries_output](./public/output_countries.png)
 
 ---
 
@@ -382,13 +381,15 @@ Hier geht es um die **prozentuale Veränderung** der Flugbewegungen **pro Flugha
   - Berechnet die prozentuale Änderung.  
   - Gibt diese als **Key** (Integer-Prozentwert) aus und fügt `<airportCode>,<stateName>,<total2019>,<total2024>` in den Value.
 
-- **Ausgabe (Beispieldaten)**:
-  ```
-  +4   EDDF,Germany,458273,478013
-  +2   EGLL,United Kingdom,690050,703112
-  +8   LOWI,Austria,2814,3032
-  ...
-  ```
+- **Ausgabe**:
+    ```
+    -15   EBBR,231172,196044,Belgium
+    13    EBCI,54426,61559,Belgium
+    112   EDDB,89374,190120,Germany
+    -48   EDDC,19753,10089,Germany
+    
+    ...
+    ```
 
 ---
 
@@ -400,7 +401,7 @@ Hier geht es um die **prozentuale Veränderung** der Flugbewegungen **pro Flugha
   - Trennt die Werte aus dem Value.  
   - Gibt den `airportCode` als **Key** und `<percentChange>,<total2019>,<total2024>,<stateName>` als **Value** zurück.
 
-- **Ausgabe [part-r-00000](output/airports/part-r-00000)**:
+- **Ausgabe [part-r-00000](./output/airports/part-r-00000)**:
     ```
     ENSG    -100,2852,0,Norway
     EDDT    -100,191591,0,Germany
@@ -409,6 +410,6 @@ Hier geht es um die **prozentuale Veränderung** der Flugbewegungen **pro Flugha
     ...
     ```
 
-    Damit entsteht in **[/output/airports/](output/airports/)** eine Liste aller Flughäfen, sortiert nach prozentualer Veränderung.
+    Damit entsteht in **[/output/airports/](./output/airports/)** eine Liste aller Flughäfen, sortiert nach prozentualer Veränderung.
 
-    ![airports_output](public/output_airports.png)
+    ![airports_output](./public/output_airports.png)
